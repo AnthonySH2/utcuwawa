@@ -61,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "utcu:build:production"
+              "buildTarget": "utcuwawa:build:production"
             },
             "development": {
-              "buildTarget": "utcu:build:development"
+              "buildTarget": "utcuwawa:build:development"
             }
           },
           "defaultConfiguration": "development"
