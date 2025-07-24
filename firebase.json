@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/utcuwawa/",
+    "public": "dist/utcuwawa/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
