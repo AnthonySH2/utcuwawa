@@ -3,10 +3,18 @@ import { AdminLayout } from './layout/admin-layout';
 import { Ventas } from './ventas/ventas';
 import { Productos } from './productos/productos';
 import { Reportes } from './reportes/reportes';
+import { LoginAdmin } from './pages/login-admin'; // ruta correcta según tu estructura
+import { AdminGuard } from './guards/admin.guard'; // te explicaré abajo cómo crearlo
 
 export const ADMIN_ROUTES: Routes = [
   {
+    path: 'login',
+    component: LoginAdmin,
+    title: 'Iniciar sesión admin'
+  },
+  {
     path: '',
+    canActivate: [AdminGuard], // proteger todo el layout
     component: AdminLayout,
     children: [
       {
@@ -26,7 +34,7 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'productos',
         pathMatch: 'full'
       }
     ]

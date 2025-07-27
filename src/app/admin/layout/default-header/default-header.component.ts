@@ -1,6 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Auth, signOut } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 import {
   AvatarComponent,
@@ -27,13 +29,17 @@ import { IconDirective } from '@coreui/icons-angular';
 @Component({
   standalone: true,
   selector: 'app-default-header',
-  templateUrl: './default-header.component.html',
+  templateUrl: './default-header.component.html',  
   imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective]
 })
 export class DefaultHeaderComponent extends HeaderComponent {
+  private auth = inject(Auth);
+  private router = inject(Router);
 
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
+  photoUrl = localStorage.getItem('userPhoto') || './assets/images/avatars/8.jpg';
+
 
   readonly colorModes = [
     { name: 'light', text: 'Light', icon: 'cilSun' },
@@ -51,6 +57,11 @@ export class DefaultHeaderComponent extends HeaderComponent {
   }
 
   sidebarId = input('sidebar1');
+
+  async logout() {
+    await signOut(this.auth);
+    this.router.navigate(['/admin/login']);
+  }
 
   public newMessages = [
     {

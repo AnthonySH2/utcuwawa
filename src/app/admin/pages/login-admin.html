@@ -1,0 +1,41 @@
+<form (ngSubmit)="login()" [formGroup]="form" class="p-4" style="max-width: 400px; margin: auto;">
+  <h2 class="mb-4 text-center">Acceso Administrador</h2>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Correo electrónico</label>
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      formControlName="email"
+      placeholder="ejemplo@correo.com"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Contraseña</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password"
+      formControlName="password"
+      placeholder="********"
+      required
+    />
+  </div>
+
+  <div *ngIf="error" class="text-danger mb-3">
+    {{ error }}
+  </div>
+
+  <div class="d-grid">
+    <button class="btn btn-primary" type="submit" [disabled]="form.invalid || loading">
+      {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
+    </button>
+    <button type="button" (click)="loginWithGoogle()" [disabled]="loading">
+        Iniciar sesión con Google
+    </button>
+
+  </div>
+</form>

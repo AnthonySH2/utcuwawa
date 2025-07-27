@@ -1,1 +1,64 @@
-<p>productos works!</p>
+<div class="importar-productos-wrapper">    
+  <h2>Importar Productos desde Excel</h2>
+  <!-- Zona de arrastre (visible solo en desktop) -->
+  <div
+    class="drop-zone"
+    *ngIf="!esMobile"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onFileDrop($event)"
+    [class.drop-zone-hover]="dragging"
+  >
+    <p>Arrastra aquí tu archivo Excel (.xls, .xlsx)</p>
+  </div>
+
+  <!-- Selección de archivo -->
+  <div class="mt-3">
+    <input type="file" accept=".xlsx,.xls" hidden #fileInput (change)="onFileSelected($event)" />
+    <button class="btn btn-primary" (click)="fileInput.click()">Seleccionar archivo Excel</button>
+  </div>
+
+  <!-- Vista previa -->
+    <div *ngIf="excelData.length > 0" class="mt-4">
+    <h5>Previsualización completa ({{ excelData.length }} productos)</h5>
+
+    <div class="table-container">
+        <table class="table table-bordered table-sm mb-0">
+        <thead>
+            <tr>
+            <th *ngFor="let key of previewKeys || []" class="sticky-header">
+                {{ key }}
+            </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of excelData">
+            <td *ngFor="let key of previewKeys || []">{{ row[key] }}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+   <button class="btn btn-success mt-3" (click)="importarProductos()" [disabled]="isImporting">
+    <span *ngIf="isImporting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    {{ isImporting ? 'Importando...' : 'Importar a Firebase' }}
+    </button>
+
+    </div>
+
+  <!-- Resultado de la importación -->
+  <div *ngIf="importSummary" class="mt-3">
+    <div class="alert alert-success">
+      Importación completada:
+      <strong>{{ importSummary.success }}</strong> productos agregados correctamente,
+      <strong>{{ importSummary.errors }}</strong> con errores.
+    </div>
+  </div>
+
+  <!-- Mensajes de error -->
+  <div *ngIf="errorMessages.length > 0" class="mt-3">
+    <div *ngFor="let error of errorMessages" class="alert alert-danger">
+      {{ error }}
+    </div>
+  </div>
+</div>
