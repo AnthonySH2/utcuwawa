@@ -1,64 +1,105 @@
-<div class="importar-productos-wrapper">    
-  <h2>Importar Productos desde Excel</h2>
-  <!-- Zona de arrastre (visible solo en desktop) -->
-  <div
-    class="drop-zone"
-    *ngIf="!esMobile"
-    (dragover)="onDragOver($event)"
-    (dragleave)="onDragLeave($event)"
-    (drop)="onFileDrop($event)"
-    [class.drop-zone-hover]="dragging"
-  >
-    <p>Arrastra aquí tu archivo Excel (.xls, .xlsx)</p>
-  </div>
-
-  <!-- Selección de archivo -->
-  <div class="mt-3">
-    <input type="file" accept=".xlsx,.xls" hidden #fileInput (change)="onFileSelected($event)" />
-    <button class="btn btn-primary" (click)="fileInput.click()">Seleccionar archivo Excel</button>
-  </div>
-
-  <!-- Vista previa -->
-    <div *ngIf="excelData.length > 0" class="mt-4">
-    <h5>Previsualización completa ({{ excelData.length }} productos)</h5>
-
-    <div class="table-container">
-        <table class="table table-bordered table-sm mb-0">
-        <thead>
-            <tr>
-            <th *ngFor="let key of previewKeys || []" class="sticky-header">
-                {{ key }}
-            </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let row of excelData">
-            <td *ngFor="let key of previewKeys || []">{{ row[key] }}</td>
-            </tr>
-        </tbody>
-        </table>
-    </div>
-
-   <button class="btn btn-success mt-3" (click)="importarProductos()" [disabled]="isImporting">
-    <span *ngIf="isImporting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-    {{ isImporting ? 'Importando...' : 'Importar a Firebase' }}
+<c-tabs [activeItemKey]="0">
+  <!-- Lista de pestañas -->
+  <c-tabs-list variant="tabs">
+    <button cTab [itemKey]="'listar'">
+      <svg cIcon class="me-2" name="cilList"></svg>
+      Listar
     </button>
+    <button cTab [itemKey]="'crear'">
+      <svg cIcon class="me-2" name="cilPlus"></svg>
+      Crear
+    </button>
+    <button cTab [itemKey]="'importar'">
+      <svg cIcon class="me-2" name="cilCloudUpload"></svg>
+      Importar desde Excel
+    </button>
+    <button cTab [itemKey]="'fotos'">
+      <svg cIcon class="me-2" name="cilImage"></svg>
+      Subir fotos desde el escritorio
+  </button>
+  </c-tabs-list>
 
-    </div>
+  <!-- Contenido de pestañas -->
+  <c-tabs-content>
+    <!-- Tab: Listar -->
+    <c-tab-panel [itemKey]="'listar'" class="p-3">
+      <h4>Listado de productos</h4>
+      <!-- Aquí irá el contenido para listar -->
+    </c-tab-panel>
 
-  <!-- Resultado de la importación -->
-  <div *ngIf="importSummary" class="mt-3">
-    <div class="alert alert-success">
-      Importación completada:
-      <strong>{{ importSummary.success }}</strong> productos agregados correctamente,
-      <strong>{{ importSummary.errors }}</strong> con errores.
-    </div>
-  </div>
+    <!-- Tab: Crear -->
+    <c-tab-panel [itemKey]="'crear'" class="p-3">
+      <h4>Crear nuevo producto</h4>
+      <!-- Aquí irá el contenido para crear -->
+    </c-tab-panel>
 
-  <!-- Mensajes de error -->
-  <div *ngIf="errorMessages.length > 0" class="mt-3">
-    <div *ngFor="let error of errorMessages" class="alert alert-danger">
-      {{ error }}
-    </div>
-  </div>
-</div>
+    <!-- Tab: Importar -->
+    <c-tab-panel [itemKey]="'importar'" class="p-3">
+      <h4>Importar Productos desde Excel</h4>
+
+      <!-- Zona de arrastre -->
+      <div
+        class="drop-zone"
+        *ngIf="!esMobile"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onFileDrop($event)"
+        [class.drop-zone-hover]="dragging"
+      >
+        <p>Arrastra aquí tu archivo Excel (.xls, .xlsx)</p>
+      </div>
+
+      <!-- Selección de archivo -->
+      <div class="mt-3">
+        <input type="file" accept=".xlsx,.xls" hidden #fileInput (change)="onFileSelected($event)" />
+        <button class="btn btn-primary" (click)="fileInput.click()">Seleccionar archivo Excel</button>
+      </div>
+
+      <!-- Vista previa -->
+      <div *ngIf="excelData.length > 0" class="mt-4">
+        <h5>Previsualización completa ({{ excelData.length }} productos)</h5>
+        <div class="table-container">
+          <table class="table table-bordered table-sm mb-0">
+            <thead>
+              <tr>
+                <th *ngFor="let key of previewKeys || []" class="sticky-header">{{ key }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of excelData">
+                <td *ngFor="let key of previewKeys || []">{{ row[key] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button class="btn btn-success mt-3" (click)="importarProductos()" [disabled]="isImporting">
+          <span *ngIf="isImporting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ isImporting ? 'Importando...' : 'Importar a Firebase' }}
+        </button>
+      </div>
+
+      <!-- Resultado de la importación -->
+      <div *ngIf="importSummary" class="mt-3">
+        <div class="alert alert-success">
+          Importación completada:
+          <strong>{{ importSummary.success }}</strong> productos agregados correctamente,
+          <strong>{{ importSummary.errors }}</strong> con errores.
+        </div>
+      </div>
+
+      <!-- Mensajes de error -->
+      <div *ngIf="errorMessages.length > 0" class="mt-3">
+        <div *ngFor="let error of errorMessages" class="alert alert-danger">
+          {{ error }}
+        </div>
+      </div>
+    </c-tab-panel>
+
+    <!-- Tab: Fotos -->
+    <c-tab-panel [itemKey]="'fotos'" class="p-3">
+      <h4>Subir fotos desde el escritorio</h4>
+      <!-- Aquí irá el contenido para crear -->
+    </c-tab-panel>
+  </c-tabs-content>
+</c-tabs>

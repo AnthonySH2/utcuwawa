@@ -1,18 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import {
+  TabsComponent,
+  TabsListComponent,
+  TabsContentComponent,
+  TabDirective,
+  TabPanelComponent,  
+} from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
   standalone: true,
   selector: 'app-productos',
-  imports: [CommonModule],
+  imports: [    
+    TabsComponent,
+    TabsListComponent,
+    TabsContentComponent,
+    TabDirective,
+    TabPanelComponent,
+    IconDirective,
+    CommonModule],
   templateUrl: './productos.html',
   styleUrl: './productos.scss'
 })
 
 export class Productos {
   isImporting = false;
+  readonly activeItem = signal(0);
+
 
   esMobile = false;
   dragging = false;

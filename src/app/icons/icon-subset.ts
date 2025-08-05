@@ -1,5 +1,8 @@
 import {
-  cilCart,  
+  cilCart, 
+  cilPlus, 
+  cilImage,
+  cilCloudUpload,
   cilGraph,
   cibCcAmex,
   cibCcApplePay,
@@ -104,6 +107,9 @@ import { logo } from './logo';
 
 export const iconSubset = {
   cilCart,
+  cilPlus,
+  cilImage,
+  cilCloudUpload,
   cilGraph,
   cibCcAmex,
   cibCcApplePay,

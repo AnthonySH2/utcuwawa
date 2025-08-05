@@ -27,25 +27,6 @@ input[type='file'] {
   background-color: #f8f8f8;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #45a049;
-  }
-
-  &:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-}
-
 .alert {
   margin-top: 1rem;
   padding: 1rem;
