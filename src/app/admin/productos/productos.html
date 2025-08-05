@@ -25,26 +25,34 @@
     <c-tab-panel [itemKey]="'listar'" class="p-3">
       <h4>Listado de productos</h4>
       <!-- Aquí irá el contenido para listar -->
+        <input
+        type="text"
+        style="padding:8px;margin:15px auto;width:30%;"
+        placeholder="Buscar"
+        (keyup)="updateFilter($event)"
+      />
       <ngx-datatable
         class="bootstrap"
         [rows]="productos"
         columnMode="standard"
         [columns]="[
-          { prop: 'NUM', name: '#' },
-          { prop: 'CODIGO', name: 'Código' },
-          { prop: 'TIPO', name: 'Tipo' },
-          { prop: 'PRODUCTO', name: 'Producto Cod.' },
-          { prop: 'NOMBRE_COMERCIAL', name: 'Nombre' },
-          { prop: 'TALLA' , name: 'Talla'},
-          { prop: 'PRECIO' , name: 'Precio'},
-          { prop: 'STOCK' , name: 'Stock'}
+          { prop: 'NUM', name: 'NUM' },
+          { prop: 'CODIGO', name: 'CODIGO' },
+          { prop: 'TIPO', name: 'TIPO' },
+          { prop: 'PRODUCTO', name: 'PRODUCTO' },
+          { prop: 'NOMBRE_COMERCIAL', name: 'NOMBRE_COMERCIAL' },
+          { prop: 'TALLA' , name: 'TALLA'},
+          { prop: 'PRECIO' , name: 'PRECIO'},
+          { prop: 'STOCK' , name: 'STOCK'}
         ]"
         [headerHeight]="40"
         [rowHeight]="50"
         [footerHeight]="0"
         [scrollbarV]="true"
         [scrollbarH]="true"
-        style="height: 800px;"
+        [limit]="10"
+        rowHeight="auto"
+        style="height: 600px;"
       >        
       </ngx-datatable>
 

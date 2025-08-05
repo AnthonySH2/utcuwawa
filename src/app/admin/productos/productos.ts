@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { Firestore, doc, setDoc, collectionData, collection  } from '@angular/fire/firestore';
@@ -12,7 +12,7 @@ import {
 
 import { IconDirective } from '@coreui/icons-angular';
 
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { NgxDatatableModule,DatatableComponent } from '@swimlane/ngx-datatable';
 
 import { Observable } from 'rxjs';
 
@@ -33,11 +33,14 @@ import { Observable } from 'rxjs';
 })
 
 export class Productos implements OnInit{
+  @ViewChild(DatatableComponent) table!: DatatableComponent<any>;
   isImporting = false;
   readonly activeItem = signal(0);
   
   productos$!: Observable<any[]>; // observable que se puede usar con async pipe
   productos: any[] = [];
+  rows: any[] = [];
+  temp: any[] = [];
 
   esMobile = false;
   dragging = false;
@@ -54,8 +57,12 @@ export class Productos implements OnInit{
 
     // Si prefieres obtener los datos una vez:
     this.productos$.subscribe((data) => {
+      this.temp = [...data];
+
+      // push our inital complete list
+      this.rows = data;
       this.productos = data;
-      console.log('Productos:', this.productos);
+      // console.log('Productos:', this.productos);
     });
   }
   constructor(private firestore: Firestore) {}
@@ -158,5 +165,19 @@ export class Productos implements OnInit{
 
     this.importSummary = { success, errors };
     this.isImporting = false;
+  }
+
+  updateFilter(event: KeyboardEvent) {
+    const val = (event.target as HTMLInputElement).value.toLowerCase();
+    // filter our data and update the rows
+    this.productos = this.temp.filter(function (d) {
+      return d.NOMBRE_COMERCIAL.toLowerCase().indexOf(val) !== -1 ||
+       d.PRODUCTO.toLowerCase().indexOf(val) !== -1 ||       
+       d.TIPO.toLowerCase().indexOf(val) !== -1 || 
+       d.CODIGO.toLowerCase().indexOf(val) !== -1 || 
+       !val;
+    });
+    // Whenever the filter changes, always go back to the first page
+    this.table.offset = 0;
   }
 }
