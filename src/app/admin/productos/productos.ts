@@ -1,7 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, collectionData, collection  } from '@angular/fire/firestore';
 import {
   TabsComponent,
   TabsListComponent,
@@ -9,12 +9,18 @@ import {
   TabDirective,
   TabPanelComponent,  
 } from '@coreui/angular';
+
 import { IconDirective } from '@coreui/icons-angular';
+
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'app-productos',
-  imports: [    
+  imports: [   
+    NgxDatatableModule, 
     TabsComponent,
     TabsListComponent,
     TabsContentComponent,
@@ -26,10 +32,12 @@ import { IconDirective } from '@coreui/icons-angular';
   styleUrl: './productos.scss'
 })
 
-export class Productos {
+export class Productos implements OnInit{
   isImporting = false;
   readonly activeItem = signal(0);
-
+  
+  productos$!: Observable<any[]>; // observable que se puede usar con async pipe
+  productos: any[] = [];
 
   esMobile = false;
   dragging = false;
@@ -40,6 +48,15 @@ export class Productos {
 
   ngOnInit() {
     this.esMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    const productosRef = collection(this.firestore, 'productos'); // nombre de tu colección
+    this.productos$ = collectionData(productosRef, { idField: 'id' });
+
+    // Si prefieres obtener los datos una vez:
+    this.productos$.subscribe((data) => {
+      this.productos = data;
+      console.log('Productos:', this.productos);
+    });
   }
   constructor(private firestore: Firestore) {}
 
@@ -93,53 +110,53 @@ export class Productos {
   async importarProductos() {
      if (!this.excelData.length) return;
 
-  this.isImporting = true;
-  this.errorMessages = [];
-  this.importSummary = null;
+    this.isImporting = true;
+    this.errorMessages = [];
+    this.importSummary = null;
 
-  let success = 0;
-  let errors = 0;
+    let success = 0;
+    let errors = 0;
 
-  for (const [i, row] of this.excelData.entries()) {
-    const codigo = row['CODIGO']?.toString().trim();
-    const nombre = row['PRODUCTO']?.toString().trim();
-    const precioRaw = row['PRECIO'];
+    for (const [i, row] of this.excelData.entries()) {
+      const codigo = row['CODIGO']?.toString().trim();
+      const nombre = row['PRODUCTO']?.toString().trim();
+      const precioRaw = row['PRECIO'];
 
-    if (!codigo) {
-      this.errorMessages.push(`Fila ${i + 2}: Falta el CODIGO`);
-      errors++;
-      continue;
-    }
+      if (!codigo) {
+        this.errorMessages.push(`Fila ${i + 2}: Falta el CODIGO`);
+        errors++;
+        continue;
+      }
 
-    if (!nombre || precioRaw === undefined || precioRaw === null || isNaN(Number(precioRaw))) {
-      this.errorMessages.push(`Fila ${i + 2}: PRODUCTO o PRECIO inválidos`);
-      errors++;
-      continue;
-    }
+      if (!nombre || precioRaw === undefined || precioRaw === null || isNaN(Number(precioRaw))) {
+        this.errorMessages.push(`Fila ${i + 2}: PRODUCTO o PRECIO inválidos`);
+        errors++;
+        continue;
+      }
 
-    const precio = Number(precioRaw);
+      const precio = Number(precioRaw);
 
-    const data: Record<string, any> = {};
-    for (const key in row) {
-      if (row.hasOwnProperty(key)) {
-        data[key] = row[key];
+      const data: Record<string, any> = {};
+      for (const key in row) {
+        if (row.hasOwnProperty(key)) {
+          data[key] = row[key];
+        }
+      }
+
+      data['CODIGO'] = codigo;
+
+      const ref = doc(this.firestore, `productos/${codigo}`);
+
+      try {
+        await setDoc(ref, data, { merge: true });
+        success++;
+      } catch (e) {
+        this.errorMessages.push(`Fila ${i + 2}: Error al subir a Firestore`);
+        errors++;
       }
     }
 
-    data['CODIGO'] = codigo;
-
-    const ref = doc(this.firestore, `productos/${codigo}`);
-
-    try {
-      await setDoc(ref, data, { merge: true });
-      success++;
-    } catch (e) {
-      this.errorMessages.push(`Fila ${i + 2}: Error al subir a Firestore`);
-      errors++;
-    }
-  }
-
-  this.importSummary = { success, errors };
-  this.isImporting = false;
+    this.importSummary = { success, errors };
+    this.isImporting = false;
   }
 }
